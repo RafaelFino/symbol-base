@@ -1,0 +1,16 @@
+version: '3.1'
+
+services:
+
+  redis:
+    image: redis
+    restart: always
+
+  elastic:
+    image: elasticsearch
+    restart: always
+    environment:
+      discovery.type: single-node
+    ports:
+      - 9200:9200
+      - 9300:9300
