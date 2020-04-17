@@ -64,12 +64,7 @@ func TestInsert(t *testing.T) {
 	}
 }
 
-func TestSearch(t *testing.T) {
-	es := prepare()
-
-	index := "test_index"
-
-	query := `
+const query string = `
 	{
 		"query": {
 			"match": {
@@ -79,18 +74,23 @@ func TestSearch(t *testing.T) {
 	}
 	`
 
-	result, err := es.Search(index, query)
+func TestSearch(t *testing.T) {
+	es := prepare()
+
+	result, err := es.Search(query)
 
 	if err != nil {
 		t.Error(err)
 	}
+
+	fmt.Printf("\tResult: %v", result)
 
 	if len(result.Hits) == 0 {
 		t.Errorf("no hits on query: %s", query)
 	}
 
 	for _, hit := range result.Hits {
-		t.Logf("\tID: %s\n\tSource: %v\n", hit.ID, hit.Source)
+		fmt.Printf("\tID: %s Score: %f Type: %s Source: %v\n", hit.ID, hit.Score, hit.Type, hit.Source)
 	}
 }
 

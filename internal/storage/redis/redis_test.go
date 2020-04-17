@@ -20,7 +20,7 @@ func Test(t *testing.T) {
 
 	redisRead, err := redisConn.Get(redisKey)
 
-	t.Logf("Redis test result: %v", redisRead == redisValue)
+	t.Logf("Redis test result: %v", redisRead[0] == redisValue)
 
 	if err != nil {
 		t.Error(err)

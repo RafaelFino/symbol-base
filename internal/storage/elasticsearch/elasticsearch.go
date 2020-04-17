@@ -86,14 +86,13 @@ func (c *Connection) Write(index string, data []Document) error {
 	return nil
 }
 
-func (c *Connection) Search(index string, query string) (*QueryResult, error) {
+func (c *Connection) Search(query string) (*QueryResult, error) {
 	var buf bytes.Buffer
 
 	buf.WriteString(query)
 
 	res, err := c.conn.Search(
 		c.conn.Search.WithContext(context.Background()),
-		c.conn.Search.WithIndex(index),
 		c.conn.Search.WithBody(&buf),
 		c.conn.Search.WithTrackTotalHits(true),
 		c.conn.Search.WithPretty(),
@@ -133,18 +132,17 @@ func (c *Connection) Search(index string, query string) (*QueryResult, error) {
 
 	ret := &QueryResult{
 		Took: float64(r["took"].(float64)),
-		Hits: make([]ResultItem, int(r["hits"].(map[string]interface{})["total"].(map[string]interface{})["value"].(float64))),
+		Hits: []ResultItem{},
 	}
 
-	for i, hit := range r["hits"].(map[string]interface{})["hits"].([]interface{}) {
-		ret.Hits[i] = ResultItem{
+	for _, hit := range r["hits"].(map[string]interface{})["hits"].([]interface{}) {
+
+		ret.Hits = append(ret.Hits, ResultItem{
 			ID:     string(hit.(map[string]interface{})["_id"].(string)),
 			Source: map[string]interface{}(hit.(map[string]interface{})["_source"].(map[string]interface{})),
 			Score:  float64(hit.(map[string]interface{})["_score"].(float64)),
 			Type:   string(hit.(map[string]interface{})["_type"].(string)),
-		}
-
-		log.Printf("Result item: %v\n", ret.Hits[i])
+		})
 	}
 
 	return ret, err

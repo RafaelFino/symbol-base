@@ -33,8 +33,8 @@ func (c *Connection) SendCommand(args ...interface{}) (interface{}, error) {
 	return c.conn.Do(args...).Result()
 }
 
-func (c *Connection) Get(key string) (string, error) {
-	return c.conn.Get(key).Result()
+func (c *Connection) Get(keys ...string) ([]interface{}, error) {
+	return c.conn.MGet(keys...).Result()
 }
 
 func (c *Connection) Set(key string, value interface{}, expiration time.Duration) error {
